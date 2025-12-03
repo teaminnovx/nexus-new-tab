@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Nexus Tab",
+  "version": "1.0.0",
+  "description": "A beautiful, customizable new tab experience with widgets, quick links, and productivity tools.",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.openweathermap.org/*",
+    "https://source.unsplash.com/*",
+    "https://www.google.com/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}
