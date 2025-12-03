@@ -1,73 +1,111 @@
-# Welcome to your Lovable project
+# Nexus Tab - Chrome New Tab Extension
 
-## Project info
+A beautiful, customizable new tab experience with widgets, quick links, and productivity tools.
 
-**URL**: https://lovable.dev/projects/25c32859-b2c2-4962-99cc-2dff0b477061
+## Features
 
-## How can I edit this code?
+- **Clock Widget** - Large time display with multiple timezone support
+- **Weather Widget** - Current weather and 5-day forecast (requires OpenWeatherMap API)
+- **Todo List** - Task management with categories
+- **Pomodoro Timer** - Focus timer with work/break cycles
+- **Quick Notes** - Auto-saving scratchpad
+- **Quick Links** - Customizable grid of favorite sites with drag-and-drop
+- **Custom Fonts** - Choose from Google Fonts for headings, body, and monospace
+- **Background Customization** - Gradients, solid colors, or Unsplash images
 
-There are several ways of editing your application.
+## Setup Instructions
 
-**Use Lovable**
+### Development
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/25c32859-b2c2-4962-99cc-2dff0b477061) and start prompting.
+```bash
+# Install dependencies
+npm install
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Building for Chrome
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Build the extension
+npm run build
 
-**Use GitHub Codespaces**
+# The built extension will be in the 'dist' folder
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Loading the Extension in Chrome
 
-## What technologies are used for this project?
+1. Open Chrome and navigate to `chrome://extensions/`
+2. Enable "Developer mode" (toggle in top right)
+3. Click "Load unpacked"
+4. Select the `dist` folder from this project
+5. Open a new tab to see Nexus Tab!
 
-This project is built with:
+## API Setup
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
+### OpenWeatherMap (Weather Widget)
+
+1. Go to [OpenWeatherMap](https://openweathermap.org/api)
+2. Sign up for a free account
+3. Get your API key from the API keys section
+4. In Nexus Tab, click the settings icon on the Weather widget
+5. Enter your API key and location
+
+## Customization
+
+### Background Options
+
+- **Gradient** - Choose from presets or create custom gradients
+- **Solid Color** - Pick any color
+- **Unsplash** - Random daily images based on search query
+
+### Font Options
+
+Choose fonts for:
+- Headings (Space Grotesk, Playfair Display, etc.)
+- Body text (Inter, Poppins, etc.)
+- Monospace (JetBrains Mono, Fira Code, etc.)
+
+### Widget Layout
+
+Toggle visibility of individual widgets in the Settings panel.
+
+## Technology Stack
+
+- React 18 + TypeScript
+- Vite (build tool)
 - Tailwind CSS
+- shadcn/ui components
+- Chrome Storage API
 
-## How can I deploy this project?
+## Project Structure
 
-Simply open [Lovable](https://lovable.dev/projects/25c32859-b2c2-4962-99cc-2dff0b477061) and click on Share -> Publish.
+```
+src/
+├── components/
+│   ├── ui/           # shadcn components
+│   ├── widgets/      # Widget components
+│   ├── Background.tsx
+│   └── SettingsPanel.tsx
+├── contexts/
+│   └── SettingsContext.tsx
+├── hooks/
+│   └── useStorage.ts
+├── lib/
+│   ├── fonts.ts      # Font loading utilities
+│   ├── storage.ts    # Chrome storage wrapper
+│   └── utils.ts
+└── pages/
+    └── Index.tsx     # Main dashboard
+```
 
-## Can I connect a custom domain to my Lovable project?
+## Keyboard Shortcuts (Coming Soon)
 
-Yes, you can!
+- `Ctrl/Cmd + K` - Focus search
+- `Ctrl/Cmd + T` - Add new todo
+- `Ctrl/Cmd + N` - Open notes
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## License
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT
