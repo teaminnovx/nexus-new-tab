@@ -201,6 +201,15 @@
   .animate-pulse-soft {
     animation: pulseSoft 2s ease-in-out infinite;
   }
+  
+  /* Drag and drop cursors */
+  .cursor-move {
+    cursor: move;
+  }
+  
+  .cursor-move:active {
+    cursor: grabbing;
+  }
 }
 
 @keyframes fadeIn {

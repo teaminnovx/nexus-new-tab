@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, Sun, Moon, Monitor, Palette, Type, Layout, X } from 'lucide-react';
+import { Settings, Sun, Moon, Monitor, Palette, Type, Layout, X, Cloud, CloudSun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useStorage } from '@/hooks/useStorage';
 import { fontOptions, allFonts } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 
@@ -31,9 +32,13 @@ export function SettingsPanel() {
     setBackgroundSettings,
     widgetLayout,
     setWidgetLayout,
+    dragEnabled,
+    setDragEnabled,
   } = useSettings();
 
+  const [weatherSettings, setWeatherSettings] = useStorage('weatherSettings');
   const [open, setOpen] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState('');
 
   const updateFontSetting = async (key: string, value: string) => {
     if (fontSettings) {
@@ -57,6 +62,16 @@ export function SettingsPanel() {
     }
   };
 
+  const saveWeatherApiKey = async () => {
+    if (!tempApiKey.trim() || !weatherSettings) return;
+    
+    await setWeatherSettings({
+      ...weatherSettings,
+      apiKey: tempApiKey.trim(),
+    });
+    setTempApiKey('');
+  };
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -74,7 +89,7 @@ export function SettingsPanel() {
         </SheetHeader>
 
         <Tabs defaultValue="appearance" className="mt-6">
-          <TabsList className="grid w-full grid-cols-4 bg-muted/50">
+          <TabsList className="grid w-full grid-cols-5 bg-muted/50">
             <TabsTrigger value="appearance" className="text-xs">
               <Palette className="w-4 h-4 mr-1" />
               Theme
@@ -86,6 +101,10 @@ export function SettingsPanel() {
             <TabsTrigger value="fonts" className="text-xs">
               <Type className="w-4 h-4 mr-1" />
               Fonts
+            </TabsTrigger>
+            <TabsTrigger value="weather" className="text-xs">
+              <CloudSun className="w-4 h-4 mr-1" />
+              Weather
             </TabsTrigger>
             <TabsTrigger value="widgets" className="text-xs">
               <Layout className="w-4 h-4 mr-1" />
@@ -145,23 +164,35 @@ export function SettingsPanel() {
               <div>
                 <Label className="text-sm font-medium mb-3 block">Gradient Presets</Label>
                 <div className="grid grid-cols-3 gap-2">
-                  {gradientPresets.map((preset) => (
-                    <button
-                      key={preset.name}
-                      onClick={() => {
-                        updateBackgroundSetting('gradientStart', preset.start);
-                        updateBackgroundSetting('gradientEnd', preset.end);
-                      }}
-                      className="group relative h-16 rounded-lg overflow-hidden"
-                      style={{
-                        background: `linear-gradient(135deg, ${preset.start}, ${preset.end})`,
-                      }}
-                    >
-                      <span className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-white">
-                        {preset.name}
-                      </span>
-                    </button>
-                  ))}
+                  {gradientPresets.map((preset) => {
+                    const isSelected = 
+                      backgroundSettings?.gradientStart === preset.start && 
+                      backgroundSettings?.gradientEnd === preset.end;
+                    
+                    return (
+                      <button
+                        key={preset.name}
+                        onClick={() => {
+                          updateBackgroundSetting('gradientStart', preset.start);
+                          updateBackgroundSetting('gradientEnd', preset.end);
+                        }}
+                        className={cn(
+                          "group relative h-16 rounded-lg overflow-hidden transition-all",
+                          isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                        )}
+                        style={{
+                          background: `linear-gradient(135deg, ${preset.start}, ${preset.end})`,
+                        }}
+                      >
+                        <span className={cn(
+                          "absolute inset-0 flex items-center justify-center transition-opacity text-xs text-white font-medium",
+                          isSelected ? "bg-black/40" : "bg-black/30 opacity-0 group-hover:opacity-100"
+                        )}>
+                          {preset.name}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-4">
                   <div>
@@ -370,8 +401,76 @@ export function SettingsPanel() {
             </div>
           </TabsContent>
 
+          {/* Weather Tab */}
+          <TabsContent value="weather" className="space-y-6 mt-6">
+            <div>
+              <Label className="text-sm font-medium mb-3 block">API Configuration</Label>
+              <div className="p-4 rounded-lg bg-background/30 border border-border/50 space-y-3">
+                <div>
+                  <Label htmlFor="weather-api-key" className="text-sm mb-2 block">
+                    OpenWeatherMap API Key
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="weather-api-key"
+                      type="password"
+                      placeholder={weatherSettings?.apiKey ? '••••••••••••' : 'Enter API key'}
+                      value={tempApiKey}
+                      onChange={(e) => setTempApiKey(e.target.value)}
+                      className="bg-background/50"
+                      onKeyDown={(e) => e.key === 'Enter' && saveWeatherApiKey()}
+                    />
+                    <Button onClick={saveWeatherApiKey} size="sm" disabled={!tempApiKey.trim()}>
+                      Save
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    Get a free API key at{' '}
+                    <a
+                      href="https://openweathermap.org/api"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      openweathermap.org
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+              <div className="flex items-start gap-3">
+                <Cloud className="w-5 h-5 text-muted-foreground mt-0.5" />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">About Weather Widget</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    The weather widget displays current conditions and forecasts for your locations.
+                    Locations can be managed directly from the widget settings.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Data is cached for 10 minutes to minimize API calls and improve performance.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
           {/* Widgets Tab */}
           <TabsContent value="widgets" className="space-y-4 mt-6">
+            <div className="mb-6">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/20">
+                <div>
+                  <Label className="font-medium">Enable Widget Dragging</Label>
+                  <p className="text-xs text-muted-foreground mt-1">Drag widgets to reorder them</p>
+                </div>
+                <Switch
+                  checked={dragEnabled}
+                  onCheckedChange={setDragEnabled}
+                />
+              </div>
+            </div>
+            
             <p className="text-sm text-muted-foreground">Toggle widgets visibility</p>
             {widgetLayout &&
               Object.entries(widgetLayout).map(([key, config]) => (
