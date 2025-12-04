@@ -32,6 +32,8 @@ export function SettingsPanel() {
     setBackgroundSettings,
     widgetLayout,
     setWidgetLayout,
+    dragEnabled,
+    setDragEnabled,
   } = useSettings();
 
   const [weatherSettings, setWeatherSettings] = useStorage('weatherSettings');
@@ -456,6 +458,19 @@ export function SettingsPanel() {
 
           {/* Widgets Tab */}
           <TabsContent value="widgets" className="space-y-4 mt-6">
+            <div className="mb-6">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-primary/10 border border-primary/20">
+                <div>
+                  <Label className="font-medium">Enable Widget Dragging</Label>
+                  <p className="text-xs text-muted-foreground mt-1">Drag widgets to reorder them</p>
+                </div>
+                <Switch
+                  checked={dragEnabled}
+                  onCheckedChange={setDragEnabled}
+                />
+              </div>
+            </div>
+            
             <p className="text-sm text-muted-foreground">Toggle widgets visibility</p>
             {widgetLayout &&
               Object.entries(widgetLayout).map(([key, config]) => (

@@ -39,6 +39,8 @@ interface SettingsContextType {
   setWidgetLayout: (layout: WidgetLayout) => Promise<void>;
   clockSettings: ClockSettings | null;
   setClockSettings: (settings: ClockSettings) => Promise<void>;
+  dragEnabled: boolean;
+  setDragEnabled: (enabled: boolean) => Promise<void>;
   useLightText: boolean;
   isLoading: boolean;
 }
@@ -51,6 +53,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [backgroundSettings, setBackgroundSettingsStorage, bgLoading] = useStorage('backgroundSettings');
   const [widgetLayout, setWidgetLayoutStorage, layoutLoading] = useStorage('widgetLayout');
   const [clockSettings, setClockSettingsStorage, clockLoading] = useStorage('clockSettings');
+  const [dragEnabled, setDragEnabledStorage] = useStorage('dragEnabled');
   const [fontsInitialized, setFontsInitialized] = useState(false);
   
   const useLightText = shouldUseLight(backgroundSettings);
@@ -103,6 +106,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     await setClockSettingsStorage(settings);
   };
 
+  const setDragEnabled = async (enabled: boolean) => {
+    await setDragEnabledStorage(enabled);
+  };
+
   const isLoading = fontLoading || bgLoading || layoutLoading || clockLoading || !fontsInitialized;
 
   return (
@@ -118,6 +125,8 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         setWidgetLayout,
         clockSettings,
         setClockSettings,
+        dragEnabled: dragEnabled ?? true,
+        setDragEnabled,
         useLightText,
         isLoading,
       }}

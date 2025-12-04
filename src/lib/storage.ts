@@ -29,6 +29,8 @@ export interface StorageData {
   aiTools: AITool[];
   musicServices: MusicService[];
   defaultMusicService: 'spotify' | 'youtube';
+  quoteCache: QuoteData;
+  dragEnabled: boolean;
 }
 
 export interface Todo {
@@ -45,6 +47,12 @@ export interface QuickLink {
   url: string;
   favicon?: string;
   order: number;
+}
+
+export interface QuoteData {
+  quote: string;
+  author: string;
+  fetchedAt: number;
 }
 
 export interface GoogleApp {
@@ -98,6 +106,7 @@ export interface WidgetLayout {
   aiTools: { visible: boolean; order: number };
   music: { visible: boolean; order: number };
   search: { visible: boolean; order: number };
+  quote: { visible: boolean; order: number };
 }
 
 export interface BackgroundSettings {
@@ -184,6 +193,7 @@ const defaultData: StorageData = {
     aiTools: { visible: true, order: 7 },
     music: { visible: true, order: 8 },
     search: { visible: true, order: 9 },
+    quote: { visible: true, order: 10 },
   },
   backgroundSettings: {
     type: 'gradient',
@@ -254,6 +264,7 @@ const defaultData: StorageData = {
     },
   ],
   defaultMusicService: 'spotify',
+  dragEnabled: true,
 };
 
 // Check if chrome.storage is available

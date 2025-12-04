@@ -12,7 +12,8 @@
   "host_permissions": [
     "https://api.openweathermap.org/*",
     "https://source.unsplash.com/*",
-    "https://www.google.com/*"
+    "https://www.google.com/*",
+    "https://api.quotable.io/*"
   ],
   "icons": {
     "16": "icons/icon16.png",
