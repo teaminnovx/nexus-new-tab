@@ -50,7 +50,6 @@ export function WeatherWidget() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [tempApiKey, setTempApiKey] = useState('');
   const [newLocation, setNewLocation] = useState('');
 
   const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
@@ -224,16 +223,6 @@ export function WeatherWidget() {
     });
   };
 
-  const saveApiKey = async () => {
-    if (!tempApiKey.trim() || !settings) return;
-    
-    await setSettings({
-      ...settings,
-      apiKey: tempApiKey.trim(),
-    });
-    setShowSettings(false);
-  };
-
   const getWeatherIcon = (iconCode: string) => {
     return weatherIcons[iconCode] || weatherIcons.default;
   };
@@ -269,33 +258,6 @@ export function WeatherWidget() {
             </PopoverTrigger>
             <PopoverContent className="w-80 glass" align="end">
               <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium mb-1 block">OpenWeatherMap API Key</label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="password"
-                      placeholder="Enter API key"
-                      defaultValue={settings?.apiKey}
-                      onChange={(e) => setTempApiKey(e.target.value)}
-                      className="bg-background/50"
-                    />
-                    <Button onClick={saveApiKey} size="sm">
-                      Save
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Get free key at{' '}
-                    <a 
-                      href="https://openweathermap.org/api" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      openweathermap.org
-                    </a>
-                  </p>
-                </div>
-                
                 <div>
                   <label className="text-sm font-medium mb-2 block">Locations</label>
                   <div className="space-y-2 mb-2">

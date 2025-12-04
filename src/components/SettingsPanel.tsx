@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, Sun, Moon, Monitor, Palette, Type, Layout, X } from 'lucide-react';
+import { Settings, Sun, Moon, Monitor, Palette, Type, Layout, X, Cloud, CloudSun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useSettings } from '@/contexts/SettingsContext';
+import { useStorage } from '@/hooks/useStorage';
 import { fontOptions, allFonts } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 
@@ -33,7 +34,9 @@ export function SettingsPanel() {
     setWidgetLayout,
   } = useSettings();
 
+  const [weatherSettings, setWeatherSettings] = useStorage('weatherSettings');
   const [open, setOpen] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState('');
 
   const updateFontSetting = async (key: string, value: string) => {
     if (fontSettings) {
@@ -57,6 +60,16 @@ export function SettingsPanel() {
     }
   };
 
+  const saveWeatherApiKey = async () => {
+    if (!tempApiKey.trim() || !weatherSettings) return;
+    
+    await setWeatherSettings({
+      ...weatherSettings,
+      apiKey: tempApiKey.trim(),
+    });
+    setTempApiKey('');
+  };
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -74,7 +87,7 @@ export function SettingsPanel() {
         </SheetHeader>
 
         <Tabs defaultValue="appearance" className="mt-6">
-          <TabsList className="grid w-full grid-cols-4 bg-muted/50">
+          <TabsList className="grid w-full grid-cols-5 bg-muted/50">
             <TabsTrigger value="appearance" className="text-xs">
               <Palette className="w-4 h-4 mr-1" />
               Theme
@@ -86,6 +99,10 @@ export function SettingsPanel() {
             <TabsTrigger value="fonts" className="text-xs">
               <Type className="w-4 h-4 mr-1" />
               Fonts
+            </TabsTrigger>
+            <TabsTrigger value="weather" className="text-xs">
+              <CloudSun className="w-4 h-4 mr-1" />
+              Weather
             </TabsTrigger>
             <TabsTrigger value="widgets" className="text-xs">
               <Layout className="w-4 h-4 mr-1" />
@@ -367,6 +384,61 @@ export function SettingsPanel() {
               <h3 className="text-2xl font-heading mb-2">Heading Font</h3>
               <p className="font-body mb-2">This is body text to preview your font selection.</p>
               <code className="font-mono text-sm">const code = "monospace";</code>
+            </div>
+          </TabsContent>
+
+          {/* Weather Tab */}
+          <TabsContent value="weather" className="space-y-6 mt-6">
+            <div>
+              <Label className="text-sm font-medium mb-3 block">API Configuration</Label>
+              <div className="p-4 rounded-lg bg-background/30 border border-border/50 space-y-3">
+                <div>
+                  <Label htmlFor="weather-api-key" className="text-sm mb-2 block">
+                    OpenWeatherMap API Key
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="weather-api-key"
+                      type="password"
+                      placeholder={weatherSettings?.apiKey ? '••••••••••••' : 'Enter API key'}
+                      value={tempApiKey}
+                      onChange={(e) => setTempApiKey(e.target.value)}
+                      className="bg-background/50"
+                      onKeyDown={(e) => e.key === 'Enter' && saveWeatherApiKey()}
+                    />
+                    <Button onClick={saveWeatherApiKey} size="sm" disabled={!tempApiKey.trim()}>
+                      Save
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    Get a free API key at{' '}
+                    <a
+                      href="https://openweathermap.org/api"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      openweathermap.org
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-lg bg-muted/30 border border-border/50">
+              <div className="flex items-start gap-3">
+                <Cloud className="w-5 h-5 text-muted-foreground mt-0.5" />
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">About Weather Widget</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    The weather widget displays current conditions and forecasts for your locations.
+                    Locations can be managed directly from the widget settings.
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Data is cached for 10 minutes to minimize API calls and improve performance.
+                  </p>
+                </div>
+              </div>
             </div>
           </TabsContent>
 

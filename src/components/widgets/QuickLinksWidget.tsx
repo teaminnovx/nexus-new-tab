@@ -177,18 +177,8 @@ export function QuickLinksWidget() {
                         alt={link.title}
                         className="w-6 h-6 object-contain"
                         onError={(e) => {
-                          const img = e.target as HTMLImageElement;
-                          // Try Google's favicon service as fallback
-                          if (!img.src.includes('google.com')) {
-                            try {
-                              const domain = new URL(link.url).hostname;
-                              img.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                            } catch {
-                              img.style.display = 'none';
-                            }
-                          } else {
-                            img.style.display = 'none';
-                          }
+                          const target = e.target as HTMLImageElement;
+                          target.src = `https://www.google.com/s2/favicons?domain=${link.url}&sz=64`;
                         }}
                       />
                     ) : (
