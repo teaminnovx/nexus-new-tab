@@ -162,23 +162,35 @@ export function SettingsPanel() {
               <div>
                 <Label className="text-sm font-medium mb-3 block">Gradient Presets</Label>
                 <div className="grid grid-cols-3 gap-2">
-                  {gradientPresets.map((preset) => (
-                    <button
-                      key={preset.name}
-                      onClick={() => {
-                        updateBackgroundSetting('gradientStart', preset.start);
-                        updateBackgroundSetting('gradientEnd', preset.end);
-                      }}
-                      className="group relative h-16 rounded-lg overflow-hidden"
-                      style={{
-                        background: `linear-gradient(135deg, ${preset.start}, ${preset.end})`,
-                      }}
-                    >
-                      <span className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity text-xs text-white">
-                        {preset.name}
-                      </span>
-                    </button>
-                  ))}
+                  {gradientPresets.map((preset) => {
+                    const isSelected = 
+                      backgroundSettings?.gradientStart === preset.start && 
+                      backgroundSettings?.gradientEnd === preset.end;
+                    
+                    return (
+                      <button
+                        key={preset.name}
+                        onClick={() => {
+                          updateBackgroundSetting('gradientStart', preset.start);
+                          updateBackgroundSetting('gradientEnd', preset.end);
+                        }}
+                        className={cn(
+                          "group relative h-16 rounded-lg overflow-hidden transition-all",
+                          isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                        )}
+                        style={{
+                          background: `linear-gradient(135deg, ${preset.start}, ${preset.end})`,
+                        }}
+                      >
+                        <span className={cn(
+                          "absolute inset-0 flex items-center justify-center transition-opacity text-xs text-white font-medium",
+                          isSelected ? "bg-black/40" : "bg-black/30 opacity-0 group-hover:opacity-100"
+                        )}>
+                          {preset.name}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-4">
                   <div>
